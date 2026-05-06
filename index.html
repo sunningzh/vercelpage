@@ -1,0 +1,1592 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECUT地学大数据与数值仿真课题组</title>
+    <style>
+        :root {
+            --primary: #1a3c5e;
+            --primary-light: #2c5f8a;
+            --accent: #b8860b;
+            --accent-light: #d4a843;
+            --bg: #f8f9fa;
+            --bg-card: #ffffff;
+            --text: #2c2c2c;
+            --text-dark: #111111;
+            --text-light: #5a5a5a;
+            --text-lighter: #777777;
+            --border: #e0e4e8;
+            --shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+            --shadow-hover: 0 6px 24px rgba(0, 0, 0, 0.12);
+            --radius: 10px;
+            --radius-sm: 6px;
+            --transition: 0.3s ease;
+            --max-width: 1100px;
+            --font-heading: 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+            --font-body: 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', -apple-system, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 70px;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            min-width: 320px;
+        }
+
+        /* ============ 顶部导航栏 ============ */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(26, 60, 94, 0.97);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 1px 8px rgba(0, 0, 0, 0.15);
+            transition: var(--transition);
+        }
+
+        .navbar-inner {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            height: 56px;
+        }
+
+        .navbar .logo {
+            font-family: var(--font-heading);
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            text-decoration: none;
+        }
+        .navbar .logo .icon-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: var(--accent-light);
+            border-radius: 50%;
+            margin-right: 6px;
+            vertical-align: middle;
+            position: relative;
+            top: -1px;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 6px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+        .nav-links li a {
+            display: block;
+            color: #d0dce8;
+            text-decoration: none;
+            font-size: 0.88rem;
+            padding: 7px 13px;
+            border-radius: 20px;
+            transition: var(--transition);
+            white-space: nowrap;
+            letter-spacing: 0.3px;
+        }
+        .nav-links li a:hover,
+        .nav-links li a:active {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        /* 移动端导航 */
+        .nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            flex-direction: column;
+            gap: 5px;
+            z-index: 1001;
+        }
+        .nav-toggle span {
+            display: block;
+            width: 26px;
+            height: 2.5px;
+            background: #fff;
+            border-radius: 2px;
+            transition: var(--transition);
+        }
+        .nav-toggle.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+        .nav-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+        .nav-toggle.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+
+        /* ============ 主容器 ============ */
+        .main-container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* ============ 通用模块样式 ============ */
+        .section {
+            padding: 40px 0 50px;
+        }
+        .section-header {
+            text-align: center;
+            margin-bottom: 36px;
+        }
+        .section-header .section-icon {
+            display: inline-block;
+            font-size: 2rem;
+            margin-bottom: 6px;
+        }
+        .section-header h2 {
+            font-family: var(--font-heading);
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: 0.5px;
+            position: relative;
+            display: inline-block;
+        }
+        .section-header h2::after {
+            content: '';
+            display: block;
+            width: 50px;
+            height: 3px;
+            background: var(--accent);
+            margin: 8px auto 0;
+            border-radius: 2px;
+        }
+        .section-header .subtitle {
+            color: var(--text-lighter);
+            font-size: 0.9rem;
+            margin-top: 4px;
+        }
+        .divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 10px 0;
+        }
+
+        /* ============ 卡片通用 ============ */
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            overflow: hidden;
+        }
+        .card:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-2px);
+        }
+
+        /* ============ 模块1：导师简介 ============ */
+        .mentor-section {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+        .mentor-grid {
+            display: flex;
+            gap: 0;
+            flex-wrap: wrap;
+        }
+        .mentor-photo-area {
+            flex: 0 0 320px;
+            min-height: 340px;
+            background: linear-gradient(160deg, #e8ecf1 0%, #d5dce4 40%, #c8d0d9 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .mentor-photo-area .photo-placeholder {
+            width: 200px;
+            height: 240px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #bcc7d4 0%, #a0afc0 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5rem;
+            color: #fff;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+            position: relative;
+            z-index: 1;
+        }
+        .mentor-photo-area .photo-label {
+            position: absolute;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            color: #6b7d8e;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 3px 14px;
+            border-radius: 12px;
+            z-index: 1;
+            letter-spacing: 0.3px;
+        }
+        .mentor-info-area {
+            flex: 1 1 400px;
+            padding: 28px 30px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            min-width: 280px;
+        }
+        /* ---------- 导师简介字体加大、颜色加深 ---------- */
+        .mentor-info-area .mentor-name {
+            font-family: var(--font-heading);
+            font-size: 1.85rem;
+            font-weight: 700;
+            color: #0a0a0a;
+            letter-spacing: 1px;
+        }
+        .mentor-info-area .mentor-title {
+            font-size: 1rem;
+            color: #8b6508;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        .mentor-info-block h4 {
+            font-size: 1rem;
+            color: #0a0a0a;
+            margin-bottom: 5px;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .mentor-info-block h4 .dot {
+            width: 7px;
+            height: 7px;
+            background: var(--accent);
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .mentor-info-block p {
+            font-size: 1rem;
+            color: #0a0a0a;
+            line-height: 1.7;
+            padding-left: 13px;
+            font-weight: 500;
+        }
+        .mentor-contact {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 16px;
+            font-size: 0.92rem;
+            color: #0a0a0a;
+            padding-left: 0;
+            margin-top: 4px;
+        }
+        .mentor-contact span {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: #f0f2f5;
+            padding: 6px 14px;
+            border-radius: 16px;
+            font-size: 0.9rem;
+            color: #0a0a0a;
+            font-weight: 500;
+        }
+
+        /* ============ 模块2：研究方向 ============ */
+        .research-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+        .research-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: var(--transition);
+            cursor: default;
+        }
+        .research-card:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-2px);
+        }
+        /* 图片变小：调整宽高比 */
+        .research-card .rc-img {
+            width: 100%;
+            aspect-ratio: 16 / 12;
+            object-fit: cover;
+            display: block;
+            background: #e8ecf1;
+        }
+        .research-card .rc-body {
+            padding: 16px 18px 18px;
+        }
+        .research-card .rc-body h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 6px;
+            letter-spacing: 0.3px;
+        }
+        .research-card .rc-body p {
+            font-size: 0.84rem;
+            color: var(--text-light);
+            line-height: 1.55;
+        }
+
+        /* ============ 模块3：学术成果 ============ */
+        .publication-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .pub-item {
+            display: flex;
+            gap: 16px;
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 16px 18px;
+            transition: var(--transition);
+            align-items: flex-start;
+        }
+        .pub-item:hover {
+            box-shadow: var(--shadow-hover);
+            background: #fdfdfe;
+        }
+        /* 成果图片放大 */
+        .pub-thumb {
+            flex: 0 0 130px;
+            height: 98px;
+            border-radius: var(--radius-sm);
+            object-fit: cover;
+            background: #e8ecf1;
+            overflow: hidden;
+        }
+        .pub-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .pub-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .pub-info .pub-title {
+            font-weight: 600;
+            font-size: 0.98rem;
+            color: var(--text);
+            line-height: 1.45;
+            margin-bottom: 4px;
+        }
+        .pub-info .pub-meta {
+            font-size: 0.82rem;
+            color: var(--text-lighter);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .pub-info .pub-meta .journal {
+            color: var(--primary-light);
+            font-weight: 500;
+        }
+        .pub-tag {
+            display: inline-block;
+            font-size: 0.72rem;
+            padding: 2px 10px;
+            border-radius: 12px;
+            background: #eef4f9;
+            color: var(--primary-light);
+            font-weight: 500;
+            letter-spacing: 0.3px;
+        }
+
+        /* ============ 模块4：项目支撑 ============ */
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 16px;
+        }
+        .project-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 20px 18px;
+            transition: var(--transition);
+            border-left: 4px solid var(--accent);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .project-card:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-1px);
+        }
+        .project-card .proj-source {
+            font-size: 0.75rem;
+            color: var(--accent);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .project-card .proj-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text);
+            line-height: 1.4;
+        }
+        .project-card .proj-meta {
+            font-size: 0.78rem;
+            color: var(--text-lighter);
+        }
+
+        /* ============ 模块5：活动与资讯（轮播） ============ */
+        .carousel-section {
+            position: relative;
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+        .carousel-viewport {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 8;
+            min-height: 240px;
+            overflow: hidden;
+            background: #1a1a1a;
+        }
+        .carousel-track {
+            display: flex;
+            height: 100%;
+            transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform;
+        }
+        .carousel-slide {
+            flex: 0 0 100%;
+            height: 100%;
+            position: relative;
+        }
+        .carousel-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .carousel-slide .slide-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 50%, rgba(0, 0, 0, 0.45) 100%);
+            pointer-events: none;
+        }
+        .carousel-indicators {
+            position: absolute;
+            bottom: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+        .carousel-indicators button {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            background: transparent;
+            cursor: pointer;
+            transition: var(--transition);
+            padding: 0;
+            opacity: 0.7;
+        }
+        .carousel-indicators button.active {
+            background: #fff;
+            opacity: 1;
+            transform: scale(1.25);
+        }
+        .carousel-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.85);
+            border: none;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.1rem;
+            color: #333;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            opacity: 0.75;
+        }
+        .carousel-arrow:hover {
+            opacity: 1;
+            background: #fff;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+        }
+        .carousel-arrow.prev {
+            left: 10px;
+        }
+        .carousel-arrow.next {
+            right: 10px;
+        }
+        /* 描述文字区域 */
+        .carousel-caption-area {
+            padding: 16px 20px 18px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            min-height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .carousel-caption-text {
+            font-size: 0.9rem;
+            color: var(--text);
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            transition: all 0.45s ease;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .carousel-caption-text.switching {
+            opacity: 0;
+            transform: translateY(16px);
+        }
+
+        /* ============ 模块6：团队成员 ============ */
+        /* ---------- 改用弹性布局实现居中 ---------- */
+        .team-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 16px;
+        }
+        .team-card {
+            width: 135px;
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 20px 12px 16px;
+            text-align: center;
+            transition: var(--transition);
+        }
+        .team-card:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-2px);
+        }
+        .team-avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 10px;
+            display: block;
+            background: #e8ecf1;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        }
+        .team-card .team-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text);
+            letter-spacing: 0.3px;
+        }
+        .team-card .team-role {
+            font-size: 0.75rem;
+            color: var(--text-lighter);
+            margin-top: 2px;
+        }
+
+        /* ============ 模块7：招生信息 ============ */
+        .admission-card {
+            background: linear-gradient(135deg, #fdfcf8 0%, #faf7ee 100%);
+            border: 1px solid #e8dbb8;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 28px 24px;
+            position: relative;
+            overflow: hidden;
+        }
+        .admission-card::before {
+            content: '';
+            position: absolute;
+            top: -30px;
+            right: -30px;
+            width: 100px;
+            height: 100px;
+            background: rgba(184, 134, 11, 0.06);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .admission-card h3 {
+            font-family: var(--font-heading);
+            font-size: 1.3rem;
+            color: var(--primary);
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+            position: relative;
+            z-index: 1;
+        }
+        .admission-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            position: relative;
+            z-index: 1;
+        }
+        .admission-list li {
+            padding-left: 22px;
+            position: relative;
+            font-size: 0.9rem;
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+        .admission-list li::before {
+            content: '✦';
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: var(--accent);
+            font-size: 0.7rem;
+        }
+        .admission-highlight {
+            display: inline-block;
+            background: #fff;
+            border: 1px dashed var(--accent-light);
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-weight: 500;
+            color: var(--accent);
+            font-size: 0.85rem;
+            letter-spacing: 0.3px;
+            margin: 2px 4px;
+        }
+
+        /* ============ 页脚 ============ */
+        .site-footer {
+            text-align: center;
+            padding: 24px 20px;
+            color: var(--text-lighter);
+            font-size: 0.8rem;
+            border-top: 1px solid var(--border);
+            margin-top: 20px;
+            letter-spacing: 0.3px;
+        }
+
+        /* ============ 响应式设计 ============ */
+        @media (max-width: 768px) {
+            .navbar-inner {
+                height: 50px;
+                padding: 0 14px;
+            }
+            .navbar .logo {
+                font-size: 1.1rem;
+            }
+            .nav-links {
+                gap: 2px;
+            }
+            .nav-links li a {
+                font-size: 0.76rem;
+                padding: 5px 9px;
+                border-radius: 16px;
+            }
+            .section {
+                padding: 30px 0 38px;
+            }
+            .section-header h2 {
+                font-size: 1.45rem;
+            }
+            .section-header {
+                margin-bottom: 24px;
+            }
+            .mentor-photo-area {
+                flex: 0 0 100%;
+                min-height: 220px;
+            }
+            .mentor-photo-area .photo-placeholder {
+                width: 140px;
+                height: 170px;
+                font-size: 3.5rem;
+            }
+            .mentor-info-area {
+                padding: 20px 16px 18px;
+            }
+            .mentor-info-area .mentor-name {
+                font-size: 1.5rem;
+            }
+            .mentor-info-block p {
+                font-size: 0.95rem;
+            }
+            .mentor-info-block h4 {
+                font-size: 0.95rem;
+            }
+            .mentor-contact span {
+                font-size: 0.85rem;
+            }
+            .research-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+            .research-card .rc-body {
+                padding: 10px 12px 14px;
+            }
+            .research-card .rc-body h3 {
+                font-size: 0.9rem;
+            }
+            .research-card .rc-body p {
+                font-size: 0.76rem;
+            }
+            .pub-item {
+                flex-direction: row;
+                gap: 12px;
+                padding: 12px 14px;
+            }
+            .pub-thumb {
+                flex: 0 0 100px;
+                height: 75px;
+            }
+            .pub-info .pub-title {
+                font-size: 0.88rem;
+            }
+            .pub-info .pub-meta {
+                font-size: 0.75rem;
+            }
+            .project-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+            .carousel-viewport {
+                aspect-ratio: 16 / 9;
+                min-height: 180px;
+            }
+            .carousel-arrow {
+                width: 30px;
+                height: 30px;
+                font-size: 0.9rem;
+            }
+            .carousel-arrow.prev {
+                left: 6px;
+            }
+            .carousel-arrow.next {
+                right: 6px;
+            }
+            .carousel-caption-area {
+                padding: 12px 14px 14px;
+                min-height: 44px;
+            }
+            .carousel-caption-text {
+                font-size: 0.8rem;
+            }
+            /* 团队成员平板调整 */
+            .team-grid {
+                gap: 12px;
+            }
+            .team-card {
+                width: 110px;
+                padding: 16px 8px 12px;
+            }
+            .team-avatar {
+                width: 56px;
+                height: 56px;
+            }
+            .team-card .team-name {
+                font-size: 0.8rem;
+            }
+            .admission-card {
+                padding: 20px 16px;
+            }
+            .admission-card h3 {
+                font-size: 1.15rem;
+            }
+            .admission-list li {
+                font-size: 0.82rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-links {
+                position: fixed;
+                top: 50px;
+                left: 0;
+                right: 0;
+                background: rgba(26, 60, 94, 0.98);
+                flex-direction: column;
+                padding: 8px 0 14px;
+                gap: 0;
+                display: none;
+                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+                border-radius: 0 0 12px 12px;
+            }
+            .nav-links.open {
+                display: flex;
+            }
+            .nav-links li a {
+                padding: 10px 20px;
+                font-size: 0.85rem;
+                border-radius: 0;
+                text-align: center;
+            }
+            .nav-toggle {
+                display: flex;
+            }
+            .research-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            .research-card .rc-img {
+                aspect-ratio: 16 / 10;
+            }
+            .pub-item {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .pub-thumb {
+                flex: 0 0 auto;
+                width: 100%;
+                height: 140px;
+                border-radius: var(--radius-sm);
+            }
+            .project-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            .mentor-info-area {
+                padding: 16px 12px 14px;
+            }
+            .mentor-contact {
+                gap: 6px 10px;
+            }
+            .mentor-contact span {
+                font-size: 0.8rem;
+                padding: 4px 10px;
+            }
+            .carousel-viewport {
+                aspect-ratio: 4 / 3;
+                min-height: 160px;
+            }
+            .carousel-arrow {
+                width: 26px;
+                height: 26px;
+                font-size: 0.75rem;
+            }
+            .carousel-indicators button {
+                width: 8px;
+                height: 8px;
+                border-width: 1.5px;
+            }
+            /* 团队成员小屏进一步调整 */
+            .team-grid {
+                gap: 8px;
+            }
+            .team-card {
+                width: 90px;
+                padding: 12px 6px 10px;
+            }
+            .team-avatar {
+                width: 48px;
+                height: 48px;
+            }
+            .team-card .team-name {
+                font-size: 0.73rem;
+            }
+            .section-header h2 {
+                font-size: 1.3rem;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .team-card {
+                width: 78px;
+                padding: 10px 4px 8px;
+            }
+            .team-avatar {
+                width: 42px;
+                height: 42px;
+            }
+            .mentor-info-area .mentor-name {
+                font-size: 1.35rem;
+            }
+            .carousel-viewport {
+                min-height: 140px;
+            }
+        }
+
+        /* 触摸设备适配 */
+        @media (hover: none) and (pointer: coarse) {
+            .carousel-arrow {
+                opacity: 0.6;
+                width: 32px;
+                height: 32px;
+            }
+            .nav-links li a {
+                padding: 8px 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ==================== 导航栏 ==================== -->
+    <nav class="navbar" id="navbar">
+        <div class="navbar-inner">
+            <a href="#" class="logo">
+                <span class="icon-dot"></span>ECUT地学大数据与数值仿真课题组
+            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="导航菜单">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#mentor">导师简介</a></li>
+                <li><a href="#research">研究方向</a></li>
+                <li><a href="#publications">学术成果</a></li>
+                <li><a href="#projects">项目支撑</a></li>
+                <li><a href="#news">活动资讯</a></li>
+                <li><a href="#team">课题组成员</a></li>
+                <li><a href="#admission">招生信息</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- ==================== 主内容区 ==================== -->
+    <div class="main-container">
+
+        <!-- ========== 模块1：导师简介 ========== -->
+        <section class="section" id="mentor">
+            <div class="section-header">
+                <h2>导师简介</h2>
+                <p class="subtitle">Mentor Profile</p>
+            </div>
+            <div class="mentor-section">
+                <div class="mentor-grid">
+                    <!-- 导师照片区域 -->
+                    <div class="mentor-photo-area">
+                        <!-- 请替换为实际导师照片：修改 src 属性 -->
+                        <img
+                        src="photo/zhang1.jpeg"
+                        alt="照片"
+                        style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;z-index:1;"
+                        loading="lazy"
+                        >
+                    </div>
+                    <!-- 导师信息区域 -->
+                    <div class="mentor-info-area">
+                        <div>
+                            <div class="mentor-name">张晟星 博士</div>
+                            <div class="mentor-title">硕士生导师</div>
+                        </div>
+                        <div class="mentor-info-block">
+                            <h4><span class="dot"></span>教育背景</h4>
+                            <p>2024， 中国科学技术大学 地球物理学 博士学位<br>2019， 中国科学技术大学 地球物理学 学士学位</p>
+                        </div>
+                        <div class="mentor-info-block">
+                            <h4><span class="dot"></span>境外访学经历</h4>
+                            <p>2022， 香港大学 访问学生<br>2018， 加州理工学院 短期访学</p>
+                        </div>
+                        <div class="mentor-info-block">
+                            <h4><span class="dot"></span>工作经历</h4>
+                            <p>2024-至今， 东华理工大学 地球物理与空间探测学院 校聘副教授</p>
+                        </div>
+                        <div class="mentor-info-block">
+                            <h4><span class="dot"></span>联系方式</h4>
+                            <div class="mentor-contact">
+                                <span>📧 zhangsx@ecut.edu.cn</span>
+                                <span>📍 地学楼B座 </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <hr class="divider">
+
+        <!-- ========== 模块2：研究方向 ========== -->
+        <section class="section" id="research">
+            <div class="section-header">
+                <span class="section-icon">🔬</span>
+                <h2>研究方向</h2>
+                <p class="subtitle"></p>
+            </div>
+            <div class="research-grid">
+                <!-- 方向1 -->
+                <div class="research-card">
+                    <img
+                    src="photo/r01.png"
+                    alt="数值仿真模拟"
+                    class="rc-img"
+                    loading="lazy"
+                    >
+                    <div class="rc-body">
+                        <h3>地质过程建模与数值仿真模拟</h3>
+                        <p>综合多源地球物理数据构建地球动力学模型，并使用有限元方法进行仿真模拟。</p>
+                    </div>
+                </div>
+                <!-- 方向2 -->
+                <div class="research-card">
+                    <img
+                    src="photo/r02.jpeg"
+                    alt="地学大数据挖掘"
+                    class="rc-img"
+                    loading="lazy"
+                    >
+                    <div class="rc-body">
+                        <h3>大数据与AI技术的地学应用</h3>
+                        <p>应用大数据挖掘技术和机器学习等AI技术研究地球科学问题。</p>
+                    </div>
+                </div>
+                <!-- 方向3 -->
+                <div class="research-card">
+                    <img
+                    src="photo/r03.png"
+                    alt="统计物理"
+                    class="rc-img"
+                    loading="lazy"
+                    >
+                    <div class="rc-body">
+                        <h3>并行有限元软件开发</h3>
+                        <p>设计分布式并行的有限元算法，开发数值仿真软件。</p>
+                    </div>
+                </div>
+                <!-- 方向4 -->
+                <div class="research-card">
+                    <img
+                    src="photo/r04.jpg"
+                    alt="计算物理"
+                    class="rc-img"
+                    loading="lazy"
+                    >
+                    <div class="rc-body">
+                        <h3>火星地貌的计算机仿真模拟</h3>
+                        <p>使用计算机模拟特殊地貌，探索其形成机制。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <hr class="divider">
+
+        <!-- ========== 模块3：学术成果 ========== -->
+        <section class="section" id="publications">
+            <div class="section-header">
+                <span class="section-icon">📄</span>
+                <h2>学术成果</h2>
+                <p class="subtitle">代表性论文</p>
+            </div>
+            <div class="publication-list">
+                <!-- 成果1 -->
+                <div class="pub-item">
+                    <div class="pub-thumb">
+                        <img src="photo/p01.png" alt="论文配图" loading="lazy">
+                    </div>
+                    <div class="pub-info">
+                        <div class="pub-title">Photoferrotrophic Bacteria Initiated Plate Tectonics in the Neoarchean ( https://doi.org/10.1029/2023GL103553)</div>
+                        <div class="pub-meta">
+                            <span class="journal">📘 Geophysical Research Letters</span>
+                            <span>2023</span>
+                            <span class="pub-tag">自然指数期刊</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- 成果2 -->
+                <div class="pub-item">
+                    <div class="pub-thumb">
+                        <img src="photo/p02.png" alt="论文配图" loading="lazy">
+                    </div>
+                    <div class="pub-info">
+                        <div class="pub-title">Continental Tip With Thinned Lithosphere and Thickened Crust Is a Favorable Location for Subduction Initiation (https://doi.org/10.1029/2023JB027067)</div>
+                        <div class="pub-meta">
+                            <span class="journal">📘 Journal of Geophysical Research: Solid Earth</span>
+                            <span>2023</span>
+                            <span class="pub-tag">自然指数期刊</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- 成果3 -->
+                <div class="pub-item">
+                    <div class="pub-thumb">
+                        <img src="photo/p03.png" alt="论文配图" loading="lazy">
+                    </div>
+                    <div class="pub-info">
+                        <div class="pub-title">Subduction Polarity Reversal: Induced or Spontaneous?( https://doi.org/10.1029/2021GL093201)</div>
+                        <div class="pub-meta">
+                            <span class="journal">📘 Geophysical Research Letters</span>
+                            <span>2021</span>
+                            <span class="pub-tag">自然指数期刊</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- 成果4 -->
+                <div class="pub-item">
+                    <div class="pub-thumb">
+                        <img src="photo/p04.png" alt="论文配图" loading="lazy">
+                    </div>
+                    <div class="pub-info">
+                        <div class="pub-title">Discovery of a geomorphological analog to Martian araneiforms in the Qaidam Basin, Tibetan Plateau(https://doi.org/10.52396/JUSTC-2023-0164)</div>
+                        <div class="pub-meta">
+                            <span class="journal">📘 Journal of USTC</span>
+                            <span>2024</span>
+                            <span class="pub-tag">封面文章</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <hr class="divider">
+
+        <!-- ========== 模块4：课题组项目支撑 ========== -->
+        <section class="section" id="projects">
+            <div class="section-header">
+                <span class="section-icon">🏛️</span>
+                <h2>课题组项目支撑</h2>
+                <p class="subtitle">Project Support</p>
+            </div>
+            <div class="project-grid">
+                <div class="project-card">
+                    <div class="proj-source">国家自然科学基金</div>
+                    <div class="proj-title">青年基金</div>
+                    <div class="proj-meta">主持</div>
+                </div>
+                <div class="project-card">
+                    <div class="proj-source">江西省自然科学基金</div>
+                    <div class="proj-title">青年基金</div>
+                    <div class="proj-meta">主持</div>
+                </div>
+                <div class="project-card">
+                    <div class="proj-source">江西省科技厅</div>
+                    <div class="proj-title">职业早期青年科技人才培养项目</div>
+                    <div class="proj-meta">主持</div>
+                </div>
+                <div class="project-card">
+                    <div class="proj-source">东华理工</div>
+                    <div class="proj-title">博士启动基金</div>
+                    <div class="proj-meta">主持</div>
+                </div>
+            </div>
+        </section>
+
+        <hr class="divider">
+
+        <!-- ========== 模块4-2：学生指导 ========== -->
+        <section class="section" id="projects">
+            <div class="section-header">
+                <span class="section-icon">👥</span>
+                <h2>学生指导</h2>
+                <p class="subtitle">Student Support</p>
+            </div>
+            <div class="project-grid">
+                <div class="project-card">
+                    <div class="proj-source">全国创新杯地球物理竞赛</div>
+                    <div class="proj-title">三等奖</div>
+                    <div class="proj-meta">2025年</div>
+                </div>
+                <div class="project-card">
+                    <div class="proj-source">2025年地球科学联合学术年会</div>
+                    <div class="proj-title">海报</div>
+                    <div class="proj-meta">2025</div>
+                </div>
+            </div>
+        </section>
+
+        <hr class="divider">
+
+        <!-- ========== 模块5：活动与资讯（图片滚动播放） ========== -->
+        <section class="section" id="news">
+            <div class="section-header">
+                <span class="section-icon">📰</span>
+                <h2>活动与资讯</h2>
+                <p class="subtitle">课题组活动资讯</p>
+            </div>
+            <div class="carousel-section" id="carouselContainer">
+                <!-- 图片轮播视口 -->
+                <div class="carousel-viewport">
+                    <div class="carousel-track" id="carouselTrack">
+                        <!-- 幻灯片1 -->
+                        <div class="carousel-slide">
+                            <img
+                            src="photo/a01.jpg"
+                            alt="青藏高原冬季科考"
+                            loading="lazy"
+                            >
+                            <div class="slide-overlay"></div>
+                        </div>
+                        <!-- 幻灯片2 -->
+                        <div class="carousel-slide">
+                            <img
+                            src="photo/a02.jpg"
+                            alt="2025创新杯竞赛合影"
+                            loading="lazy"
+                            >
+                            <div class="slide-overlay"></div>
+                        </div>
+                        <!-- 幻灯片3 -->
+                        <div class="carousel-slide">
+                            <img
+                            src="photo/a03.jpg"
+                            alt="青藏高原夏季科考"
+                            loading="lazy"
+                            >
+                            <div class="slide-overlay"></div>
+                        </div>
+                        <!-- 幻灯片4 -->
+                        <div class="carousel-slide">
+                            <img
+                            src="photo/a04.jpg"
+                            alt="研究成果入选《Geophysical Research Letters》最高阅读量论文榜单"
+                            loading="lazy"
+                            >
+                            <div class="slide-overlay"></div>
+                        </div>
+                    </div>
+                    <!-- 指示器 -->
+                    <div class="carousel-indicators" id="carouselIndicators"></div>
+                    <!-- 箭头 -->
+                    <button class="carousel-arrow prev" id="carouselPrev" aria-label="上一张">◀</button>
+                    <button class="carousel-arrow next" id="carouselNext" aria-label="下一张">▶</button>
+                </div>
+                <!-- 底部描述文字（随图片滚动切换） -->
+                <div class="carousel-caption-area">
+                    <span class="carousel-caption-text" id="carouselCaption">
+                        课题组活动资讯
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <hr class="divider">
+
+        <!-- ========== 模块6：团队成员 ========== -->
+        <section class="section" id="team">
+            <div class="section-header">
+                <span class="section-icon">👥</span>
+                <h2>课题组成员</h2>
+                <p class="subtitle">成员信息</p>
+            </div>
+            <div class="team-grid">
+                <!-- 成员1 -->
+                <div class="team-card">
+                    <img
+                    src="photo/stu.jpeg"
+                    alt="李伟"
+                    class="team-avatar"
+                    loading="lazy"
+                    >
+                    <div class="team-name">Zhong Zeyun</div>
+                    <div class="team-role">硕士研究生</div>
+                </div>
+                <!-- 成员2 -->
+                <div class="team-card">
+                    <img
+                    src="photo/stu.jpeg"
+                    alt=""
+                    class="team-avatar"
+                    loading="lazy"
+                    >
+                    <div class="team-name">Jiang Daijing</div>
+                    <div class="team-role">大四（已录取地大武汉研究生）</div>
+                </div>
+                <!-- 成员3 -->
+                <div class="team-card">
+                    <img
+                    src="photo/stu.jpeg"
+                    alt=""
+                    class="team-avatar"
+                    loading="lazy"
+                    >
+                    <div class="team-name">Wang Yifei</div>
+                    <div class="team-role">本科生</div>
+                </div>
+                <!-- 成员4 -->
+                <div class="team-card">
+                    <img
+                    src="photo/stu.jpeg"
+                    alt=""
+                    class="team-avatar"
+                    loading="lazy"
+                    >
+                    <div class="team-name">Zhang Yujie</div>
+                    <div class="team-role">本科生</div>
+                </div>
+                <!-- 成员5 -->
+                <div class="team-card">
+                    <img
+                    src="photo/stu.jpeg"
+                    alt=""
+                    class="team-avatar"
+                    loading="lazy"
+                    >
+                    <div class="team-name">Fan Enxi</div>
+                    <div class="team-role">本科生</div>
+                </div>
+                <!-- 成员6 -->
+                <div class="team-card">
+                    <img
+                    src="photo/stu.jpeg"
+                    alt=""
+                    class="team-avatar"
+                    loading="lazy"
+                    >
+                    <div class="team-name">Li Yanghui</div>
+                    <div class="team-role">本科生</div>
+                </div>
+            </div>
+        </section>
+
+        <hr class="divider">
+
+        <!-- ========== 模块7：招生信息 ========== -->
+        <section class="section" id="admission">
+            <div class="section-header">
+                <span class="section-icon">🎓</span>
+                <h2>招生信息</h2>
+                <p class="subtitle">Admission</p>
+            </div>
+            <div class="admission-card">
+                <h3>📢 课题组常年招收硕士研究生、本科生</h3>
+                <ul class="admission-list">
+                    <li>招收专业：<span class="admission-highlight">不限专业</span></li>
+                    <li>招生类型：地球物理学学硕、地质工程专硕、地质资源与地质工程专硕</li>
+                    <li>基本要求：对课题组研究有浓厚兴趣，有良好的团队协作精神</li>
+                    <li>课题组提供：充足的科研经费、国内外学术交流机会</li>
+                    <li>申请方式：请将<span class="admission-highlight">个人简历</span>发送至 <strong>zhangsx@ecut.edu.cn</strong></li>
+                    <li>邮件主题请注明：<strong>"2025年硕士研究生申请-姓名-毕业院校"</strong>或<strong>"年级-本科生入组申请-姓名"</strong></li>
+                </ul>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- ==================== 页脚 ==================== -->
+    <footer class="site-footer">
+        <p>© 2026 ECUT地学大数据与数值仿真课题组 | 地址：地学楼B座</p>
+    </footer>
+
+    <!-- ==================== JavaScript ==================== -->
+    <script>
+        (function() {
+            // ========== 移动端导航菜单 ==========
+            const navToggle = document.getElementById('navToggle');
+            const navLinks = document.getElementById('navLinks');
+            const allNavLinks = navLinks.querySelectorAll('a');
+
+            navToggle.addEventListener('click', function() {
+                navToggle.classList.toggle('active');
+                navLinks.classList.toggle('open');
+            });
+
+            // 点击导航链接后关闭菜单
+            allNavLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    navToggle.classList.remove('active');
+                    navLinks.classList.remove('open');
+                });
+            });
+
+            // 点击页面其他区域关闭菜单
+            document.addEventListener('click', function(e) {
+                if (!navToggle.contains(e.target) && !navLinks.contains(e.target)) {
+                    navToggle.classList.remove('active');
+                    navLinks.classList.remove('open');
+                }
+            });
+
+            // ========== 活动资讯轮播 ==========
+            const track = document.getElementById('carouselTrack');
+            const caption = document.getElementById('carouselCaption');
+            const indicatorsContainer = document.getElementById('carouselIndicators');
+            const prevBtn = document.getElementById('carouselPrev');
+            const nextBtn = document.getElementById('carouselNext');
+            const slides = track.querySelectorAll('.carousel-slide');
+            const totalSlides = slides.length;
+
+            // 描述文字数组（与幻灯片一一对应）
+            const captions = [
+                '青藏高原冬季科考',
+                '2025创新杯竞赛合影',
+                '青藏高原夏季科考',
+                '研究成果入选《Geophysical Research Letters》最高阅读量论文榜单',
+            ];
+
+            let currentIndex = 0;
+            let autoPlayTimer = null;
+            let isTransitioning = false;
+
+            // 创建指示器
+            for (let i = 0; i < totalSlides; i++) {
+                const btn = document.createElement('button');
+                btn.setAttribute('aria-label', '切换到第' + (i + 1) + '张');
+                if (i === 0) btn.classList.add('active');
+                btn.addEventListener('click', () => goToSlide(i));
+                indicatorsContainer.appendChild(btn);
+            }
+            const indicatorButtons = indicatorsContainer.querySelectorAll('button');
+
+            function updateIndicators(index) {
+                indicatorButtons.forEach((btn, i) => {
+                    btn.classList.toggle('active', i === index);
+                });
+            }
+
+            function updateCaption(index) {
+                // 添加切换动画类
+                caption.classList.add('switching');
+                setTimeout(() => {
+                    caption.textContent = captions[index] || '';
+                    caption.classList.remove('switching');
+                }, 300);
+            }
+
+            function goToSlide(index) {
+                if (isTransitioning || index === currentIndex) return;
+                if (index < 0 || index >= totalSlides) return;
+                isTransitioning = true;
+                currentIndex = index;
+                track.style.transform = 'translateX(-' + (currentIndex * 100) + '%)';
+                updateIndicators(currentIndex);
+                updateCaption(currentIndex);
+                setTimeout(() => {
+                    isTransitioning = false;
+                }, 550);
+                resetAutoPlay();
+            }
+
+            function nextSlide() {
+                const next = (currentIndex + 1) % totalSlides;
+                goToSlide(next);
+            }
+
+            function prevSlide() {
+                const prev = (currentIndex - 1 + totalSlides) % totalSlides;
+                goToSlide(prev);
+            }
+
+            function resetAutoPlay() {
+                if (autoPlayTimer) clearInterval(autoPlayTimer);
+                autoPlayTimer = setInterval(nextSlide, 4200);
+            }
+
+            // 箭头按钮事件
+            prevBtn.addEventListener('click', () => {
+                prevSlide();
+                resetAutoPlay();
+            });
+            nextBtn.addEventListener('click', () => {
+                nextSlide();
+                resetAutoPlay();
+            });
+
+            // 触摸滑动支持
+            let touchStartX = 0;
+            let touchEndX = 0;
+            const carouselContainer = document.getElementById('carouselContainer');
+
+            carouselContainer.addEventListener('touchstart', function(e) {
+                touchStartX = e.changedTouches[0].screenX;
+            }, { passive: true });
+
+            carouselContainer.addEventListener('touchend', function(e) {
+                touchEndX = e.changedTouches[0].screenX;
+                const diff = touchStartX - touchEndX;
+                if (Math.abs(diff) > 50) {
+                    if (diff > 0) {
+                        nextSlide();
+                    } else {
+                        prevSlide();
+                    }
+                    resetAutoPlay();
+                }
+            }, { passive: true });
+
+            // 键盘导航
+            document.addEventListener('keydown', function(e) {
+                // 检查轮播是否在视野中
+                const rect = carouselContainer.getBoundingClientRect();
+                const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+                if (!isVisible) return;
+                if (e.key === 'ArrowLeft') {
+                    prevSlide();
+                    resetAutoPlay();
+                } else if (e.key === 'ArrowRight') {
+                    nextSlide();
+                    resetAutoPlay();
+                }
+            });
+
+            // 初始启动自动播放
+            autoPlayTimer = setInterval(nextSlide, 4200);
+
+            // 页面隐藏时暂停自动播放
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    if (autoPlayTimer) clearInterval(autoPlayTimer);
+                    autoPlayTimer = null;
+                } else {
+                    if (!autoPlayTimer) {
+                        autoPlayTimer = setInterval(nextSlide, 4200);
+                    }
+                }
+            });
+
+            // ========== 导航栏滚动阴影 ==========
+            const navbar = document.getElementById('navbar');
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 10) {
+                    navbar.style.boxShadow = '0 2px 16px rgba(0,0,0,0.18)';
+                } else {
+                    navbar.style.boxShadow = '0 1px 8px rgba(0,0,0,0.15)';
+                }
+            });
+
+            console.log('✅ 理科课题组学术网站已更新');
+            console.log('   - 导师简介字体加大，采用深黑色');
+            console.log('   - 研究方向图片尺寸缩小');
+            console.log('   - 学术成果图片尺寸放大');
+            console.log('   - 团队成员卡片居中显示');
+        })();
+    </script>
+</body>
+</html>
